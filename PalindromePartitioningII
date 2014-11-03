@@ -1,0 +1,47 @@
+public class PalindromePartitioningII {
+    public int minCut(String s) {
+        if (s == null || s.length() <= 1) {
+	    return 0;
+	}
+	
+	int L = s.length();
+	boolean[][] matrix = new boolean[L][L];
+	// matrix[i][j] means S[i...j] is palindrome
+	for (int i = 0; i < L; i++) {
+	    matrix[i][i] = true; // single char is palindorme
+	}
+	
+	for (int l = 2; l <= L; l++) {
+	    // L=right-left+1, so right = L+left-1
+	    for (int left = 0; l+left-1 < L; left++) {
+		int right = l+left-1;
+		if (s.charAt(left) == s.charAt(right) && ((right-1 <= left+1) || matrix[left+1][right-1])) {
+		    matrix[left][right] = true;
+		}
+	    }
+	}
+	
+	if (matrix[0][L-1]) {
+	    return 0;// its a palindrome
+	}
+	
+	int[] result = new int[L];
+	// result[i] = min cut in s[i...L]
+	for (int i = L-1; i >= 0; i--) {
+	    if (matrix[i][L-1]) {
+		result[i] = 0;
+		continue;
+	    }
+	    
+	    result[i] = L - 1 - i;
+	    for (int j = i; j < L; j++) {
+		// note: j < L, and the beloew is result[j+1], will it overfloat? not, because if j == L-1, which means S[i...L-1] are palindrome, program will not reach here because of the above continue
+		if (matrix[i][j] && result[i] > 1 + result[j+1]) {
+		    result[i] = 1 + result[j+1];
+		}
+	    }
+	}
+	
+	return result[0];
+    }
+}
