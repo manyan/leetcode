@@ -1,0 +1,50 @@
+public class WildCardMatch {
+    public boolean match(String S, String P) {
+	if (P == null || P.isEmpty()) {
+	    return true;
+	}
+	
+	if (P.length() == 1 && P.charAt(0) == '$') {
+	    return S == null || S.isEmpty();
+	}
+	
+	if (P.charAt(0) == '?') {
+	    if (S == null || S.isEmpty()) {
+		return false;
+	    }
+	    return match(S.substring(1), P.substring(1));
+	}
+	if (P.charAt(0) == '*') {
+	    for (int i = 0; i < S.length(); i++) {
+		if (match(S.substring(i+1), P.substring(1))) {
+		    return true;
+		}
+	    }
+	    
+	    return isMatch(S, P.substring(1));
+	}
+	
+	// base case
+	return S != null && !S.isEmpty() && S.charAt(0) == P.charAt(0) && match(S.substring(1), P.substring(1));
+    }
+    
+    public boolean isMatch(String S, String P) {
+	P += '$';
+	// improve, remove consective *
+	StringBuilder sb = new StringBuilder();
+	int i = 0;
+	int L = P.length();
+	while (i < L) {
+	    if (P.charAt(i) != '*') {
+		sb.append(P.charAt(i));
+		i++;
+	    } else {
+		i++;
+		while (i < L && P.charAt(i) == '*') {
+		    i++;
+		}
+	    }
+	}
+	return match(S, sb.toString());
+    }
+}
